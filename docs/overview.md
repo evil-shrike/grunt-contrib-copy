@@ -1,4 +1,4 @@
-## Overview
+# Overview
 
 This plugin is a forked version of official [grunt-contrib-copy](https://github.com/gruntjs/grunt-contrib-copy) plugin (with `copy` task).  
 

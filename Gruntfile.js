@@ -141,5 +141,6 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint', 'clean', 'copy', 'nodeunit']);
 
   // By default, lint and run all tests.
-  grunt.registerTask('default', ['test', 'build-contrib']);
+  //grunt.registerTask('build-contrib', ['contrib-ci', 'contrib-core'])
+  grunt.registerTask('default', ['test', 'contrib-core']);
 };

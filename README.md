@@ -1,4 +1,4 @@
-# grunt-files v1.0.0 [![Build Status: Linux](https://travis-ci.org/evil-shrike/grunt-files.svg?branch=master)](https://travis-ci.org/evil-shrike/grunt-files) [![Build Status: Windows](https://ci.appveyor.com/api/projects/status/fe6l517l01ys2y86/branch/master?svg=true)](https://ci.appveyor.com/project/gruntjs/grunt-files/branch/master)
+# grunt-files v1.0.0
 
 > Copy and move files and folders
 
@@ -18,7 +18,7 @@ Once the plugin has been installed, it may be enabled inside your Gruntfile with
 grunt.loadNpmTasks('grunt-files');
 ```
 
-#### Overview
+### Overview
 
 This plugin is a forked version of official [grunt-contrib-copy](https://github.com/gruntjs/grunt-contrib-copy) plugin (with `copy` task).  
 
@@ -324,4 +324,4 @@ If specified then existing files will not be overwritten (by default `move` task
 
 Task submitted by [Sergei Dorogin](http://about.dorogin.com)
 
-*This file was generated on Fri Apr 06 2018 21:44:29.*
+*This file was generated on Fri Apr 06 2018 22:13:07.*
