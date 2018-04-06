@@ -33,3 +33,21 @@ Type: `Boolean`
 Default: `false`
 
 Whether to preserve the timestamp attributes(`atime` and `mtime`) when copying files. Set to `true` to preserve files timestamp. But timestamp will *not* be preserved when the file contents or name are changed during copying.
+
+#### forceOverwrite
+Type: `Boolean`  
+Default: `false`
+
+Normally `copy` task will fail to overwrite readonly files. This option make it to overwrite existing readonly files.
+
+#### skipExisting
+Type: `Boolean`  
+Default: `false`
+
+If specified then existing files will not be overwritten (by default `copy` task overwrites existing files).
+
+#### removeSource
+Type: `Boolean`  
+Default: `false`
+
+If specified then copied files will be deleted (i.e. moved instead of copied effectively - see also `move` task). Note that skipped to copy files won't be deleted.

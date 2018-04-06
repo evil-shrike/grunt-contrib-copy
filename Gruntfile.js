@@ -1,7 +1,7 @@
 /*
- * grunt-contrib-copy
- * http://gruntjs.com/
- *
+ * grunt-files
+ * https://github.com/evil-shrike/grunt-files
+ * Copyright (c) 2018 Sergei Dorogin
  * Copyright (c) 2016 Chris Talkington, contributors
  * Licensed under the MIT license.
  */
@@ -32,7 +32,7 @@ module.exports = function(grunt) {
     },
 
     testVars: {
-      name: 'grunt-contrib-copy',
+      name: 'grunt-files',
       version: '0.1.0',
       match: 'folder_one/*'
     },
@@ -117,6 +117,8 @@ module.exports = function(grunt) {
             { src: 'test/fixtures/time_folder/test.js', dest: 'tmp/copy_test_timestamp/test1.js' }
         ]
       }
+      // TODO: new copy options
+      // TODO: move
     },
 
     // Unit tests.

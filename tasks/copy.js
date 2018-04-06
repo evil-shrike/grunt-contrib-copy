@@ -1,52 +1,38 @@
-/*
- * grunt-contrib-copy
- * http://gruntjs.com/
+/*!
+ * grunt-files  
+ * originally forked from grunt-contrib-copy (see README for details)
  *
+ * Copyright (c) 2018 Sergei Dorogin (http://about.dorogin.com)
+ * Credits for original `copy` task in grunt-contrib-copy:
  * Copyright (c) 2016 Chris Talkington, contributors
  * Licensed under the MIT license.
- * https://github.com/gruntjs/grunt-contrib-copy/blob/master/LICENSE-MIT
+ * https://github.com/evil-shrike/grunt-files/blob/master/LICENSE-MIT
  */
 
 'use strict';
 
 module.exports = function(grunt) {
+  var common = require('./common')(grunt);
   var path = require('path');
   var fs = require('fs');
   var chalk = require('chalk');
   var fileSyncCmp = require('file-sync-cmp');
-  var isWindows = process.platform === 'win32';
 
   grunt.registerMultiTask('copy', 'Copy files.', function() {
 
     var options = this.options({
       encoding: grunt.file.defaultEncoding,
-      // processContent/processContentExclude deprecated renamed to process/noProcess
-      processContent: false,
-      processContentExclude: [],
       timestamp: false,
-      mode: false
+      mode: false,
+      forceOverwrite: false,
+      skipExisting: false,
+      removeSource: false
     });
 
     var copyOptions = {
       encoding: options.encoding,
-      process: options.process || options.processContent,
-      noProcess: options.noProcess || options.processContentExclude
-    };
-
-    var detectDestType = function(dest) {
-      if (grunt.util._.endsWith(dest, '/')) {
-        return 'directory';
-      } else {
-        return 'file';
-      }
-    };
-
-    var unixifyPath = function(filepath) {
-      if (isWindows) {
-        return filepath.replace(/\\/g, '/');
-      } else {
-        return filepath;
-      }
+      process: options.process,
+      noProcess: options.noProcess
     };
 
     var syncTimestamp = function (src, dest) {
@@ -59,7 +45,7 @@ module.exports = function(grunt) {
         return;
       }
 
-      var fd = fs.openSync(dest, isWindows ? 'r+' : 'r');
+      var fd = fs.openSync(dest, common.isWindows ? 'r+' : 'r');
       fs.futimesSync(fd, stat.atime, stat.mtime);
       fs.closeSync(fd);
     };
@@ -68,17 +54,18 @@ module.exports = function(grunt) {
     var dirs = {};
     var tally = {
       dirs: 0,
-      files: 0
+      files: 0,
+      filesSkipped: 0
     };
 
     this.files.forEach(function(filePair) {
       isExpandedPair = filePair.orig.expand || false;
 
       filePair.src.forEach(function(src) {
-        src = unixifyPath(src);
-        var dest = unixifyPath(filePair.dest);
+        src = common.unixifyPath(src);
+        var dest = common.unixifyPath(filePair.dest);
 
-        if (detectDestType(dest) === 'directory') {
+        if (common.detectDestType(dest) === 'directory') {
           dest = isExpandedPair ? dest : path.join(dest, src);
         }
 
@@ -95,15 +82,28 @@ module.exports = function(grunt) {
 
           tally.dirs++;
         } else {
-          grunt.verbose.writeln('Copying ' + chalk.cyan(src) + ' -> ' + chalk.cyan(dest));
-          grunt.file.copy(src, dest, copyOptions);
-          if (options.timestamp !== false) {
-            syncTimestamp(src, dest);
+          if (options.skipExisting && grunt.file.exists(dest)) {
+            tally.filesSkipped++;
+          } else {
+            grunt.verbose.writeln('Copying ' + chalk.cyan(src) + ' -> ' + chalk.cyan(dest));
+
+            if (options.forceOverwrite && grunt.file.exists(dest)) {
+              grunt.file.delete(dest, {force: true});
+            }
+
+            grunt.file.copy(src, dest, copyOptions);
+            if (options.timestamp !== false) {
+              syncTimestamp(src, dest);
+            }
+            if (options.mode !== false) {
+              fs.chmodSync(dest, (options.mode === true) ? fs.lstatSync(src).mode : options.mode);
+            }
+            tally.files++;
+
+            if (options.removeSource) {
+              grunt.file.delete(src);
+            }
           }
-          if (options.mode !== false) {
-            fs.chmodSync(dest, (options.mode === true) ? fs.lstatSync(src).mode : options.mode);
-          }
-          tally.files++;
         }
       });
     });
@@ -122,6 +122,9 @@ module.exports = function(grunt) {
 
     if (tally.files) {
       grunt.log.write((tally.dirs ? ', copied ' : 'Copied ') + chalk.cyan(tally.files.toString()) + (tally.files === 1 ? ' file' : ' files'));
+    }
+    if (tally.filesSkipped) {
+      grunt.log.write( (tally.files || tally.files ? ', skipped ' : 'Skipped ') + chalk.cyan(tally.filesSkipped.toString()) + (tally.filesSkipped === 1 ? ' file' : ' files'));
     }
 
     grunt.log.writeln();

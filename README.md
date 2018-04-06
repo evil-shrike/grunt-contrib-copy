@@ -1,6 +1,6 @@
-# grunt-contrib-copy v1.0.0 [![Build Status: Linux](https://travis-ci.org/gruntjs/grunt-contrib-copy.svg?branch=master)](https://travis-ci.org/gruntjs/grunt-contrib-copy) [![Build Status: Windows](https://ci.appveyor.com/api/projects/status/fe6l517l01ys2y86/branch/master?svg=true)](https://ci.appveyor.com/project/gruntjs/grunt-contrib-copy/branch/master)
+# grunt-files v1.0.0 [![Build Status: Linux](https://travis-ci.org/evil-shrike/grunt-files.svg?branch=master)](https://travis-ci.org/evil-shrike/grunt-files) [![Build Status: Windows](https://ci.appveyor.com/api/projects/status/fe6l517l01ys2y86/branch/master?svg=true)](https://ci.appveyor.com/project/gruntjs/grunt-files/branch/master)
 
-> Copy files and folders
+> Copy and move files and folders
 
 
 
@@ -9,21 +9,46 @@
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a [Gruntfile](http://gruntjs.com/sample-gruntfile) as well as install and use Grunt plugins. Once you're familiar with that process, you may install this plugin with this command:
 
 ```shell
-npm install grunt-contrib-copy --save-dev
+npm install grunt-files --save-dev
 ```
 
 Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of JavaScript:
 
 ```js
-grunt.loadNpmTasks('grunt-contrib-copy');
+grunt.loadNpmTasks('grunt-files');
 ```
 
-*This plugin was designed to work with Grunt 0.4.x. If you're still using grunt v0.3.x it's strongly recommended that [you upgrade](http://gruntjs.com/upgrading-from-0.3-to-0.4), but in case you can't please use [v0.3.2](https://github.com/gruntjs/grunt-contrib-copy/tree/grunt-0.3-stable).*
+#### Overview
+
+This plugin is a forked version of official [grunt-contrib-copy](https://github.com/gruntjs/grunt-contrib-copy) plugin (with `copy` task).  
+
+Original plugin was submitted by [Chris Talkington](http://christalkington.com/).
+All credits for `copy` task go to him.
+
+The plugin was forked at [v1.0.0](https://github.com/gruntjs/grunt-contrib-copy/releases/tag/v1.0.0) version of grunt-contrib-copy.
+
+The plugin (`grunt-files`) contains two tasks: `copy` and `move`. `copy` is almost the same as in original plugin with the several additions:
+
+* added option `forceOverwrite`
+* added option `skipExisting`
+* added option `removeSource`
+
+See [Options](#copy-task) for details.
+
+Addiionally plugin provides `move` task for moving files and folder with the same logic as `copy` task.
+
+>Special note about the fork. I'm not fully sure that it was correct to fork and re-release original work as a new pluging. But it seems MIT license should allow it. Anyway if you think it is not correct, unfair or impolite please let me know - create an issue with your thought. I just needed a Grunt task for moving files with the same logic that is in grunt-contrib-copy. 
+
+Other move/rename tasks out there:
+* [grunt-move](https://www.npmjs.com/package/grunt-move) - it doesn't support glob pattens  
+* [grunt-contrib-rename](https://www.npmjs.com/package/grunt-contrib-rename) (despite its name it's not an official plugin from Grunt Team - [bad naming](https://gruntjs.com/creating-plugins#naming-your-task)) - it doesn't support glob pattens
 
 
 
 ## Copy task
 _Run this task with the `grunt copy` command._
+
+Task copies files and folder.
 
 Task targets, files and options may be specified according to the grunt [Configuring tasks](http://gruntjs.com/configuring-tasks) guide.
 ### Options
@@ -61,6 +86,24 @@ Type: `Boolean`
 Default: `false`
 
 Whether to preserve the timestamp attributes(`atime` and `mtime`) when copying files. Set to `true` to preserve files timestamp. But timestamp will *not* be preserved when the file contents or name are changed during copying.
+
+###### forceOverwrite
+Type: `Boolean`  
+Default: `false`
+
+Normally `copy` task will fail to overwrite readonly files. This option make it to overwrite existing readonly files.
+
+###### skipExisting
+Type: `Boolean`  
+Default: `false`
+
+If specified then existing files will not be overwritten (by default `copy` task overwrites existing files).
+
+###### removeSource
+Type: `Boolean`  
+Default: `false`
+
+If specified then copied files will be deleted (i.e. moved instead of copied effectively - see also `move` task). Note that skipped to copy files won't be deleted.
 
 ### Usage Examples
 
@@ -227,7 +270,7 @@ NOTE: If `process` is not working, be aware it was called `processContent` in v0
 
 ##### Troubleshooting
 
-By default, if a file or directory is not found it is quietly ignored. If the file should exist, and non-existence generate an error, then add `nonull:true`. For instance, this Gruntfile.js entry:
+By default, if a file or directory is not found it is quietly ignored. If the file should exist, and non-existence generates an error, then add `nonull:true`. For instance, this Gruntfile.js entry:
 
 ```js
 copy: {
@@ -251,29 +294,34 @@ Aborted due to warnings.
 
 
 
+## Move task
+_Run this task with the `grunt move` command._
+
+Task moves files and folder.
+
+Task targets, files and options may be specified according to the grunt [Configuring tasks](http://gruntjs.com/configuring-tasks) guide.
+### Options
+
+###### forceOverwrite
+Type: `Boolean`  
+Default: `false`
+
+Normally `move` task will fail to overwrite readonly files. This option make it to overwrite existing readonly files.
+
+###### skipExisting
+Type: `Boolean`  
+Default: `false`
+
+If specified then existing files will not be overwritten (by default `move` task overwrites existing files).
+
+
+
 ## Release History
 
- * 2016-03-04   v1.0.0   Bump devDependencies. Add example of using relative path. Point main to task and remove peerDeps.
- * 2015-10-19   v0.8.2   Fix expand-less copies with multiple files.
- * 2015-08-20   v0.8.1   Update `chalk` dependency.
- * 2015-02-20   v0.8.0   Performance improvements. The `mode` option now also applies to directories. Fix path issue on Windows.
- * 2014-10-15   v0.7.0   Add timestamp option to disable preserving timestamp when copying.
- * 2014-09-17   v0.6.0   Update chalk dependency and other devDependencies. Preserve file timestamp when copying.
- * 2013-12-23   v0.5.0   If an encoding is specified, overwrite `grunt.file.defaultEncoding`. Rename `processContent`/`processContentExclude` to `process`/`noProcess` to match Grunt API. `mode` option to copy existing or set file permissions.
- * 2013-03-26   v0.4.1   Output summary by default ("Copied N files, created M folders"). Individual transaction output available via `--verbose`.
- * 2013-02-15   v0.4.0   First official release for Grunt 0.4.0.
- * 2013-01-23   v0.4.0rc7   Updating grunt/gruntplugin dependencies to rc7. Changing in-development grunt/gruntplugin dependency versions from tilde version ranges to specific versions.
- * 2013-01-14   v0.4.0rc5   Updating to work with grunt v0.4.0rc5. Conversion to grunt v0.4 conventions. Replace `basePath` with `cwd`. Empty directory support.
- * 2012-10-18   v0.3.2   Pass `copyOptions` on single file copy.
- * 2012-10-12   v0.3.1   Rename grunt-contrib-lib dep to grunt-lib-contrib.
- * 2012-09-24   v0.3.0   General cleanup and consolidation. Global options depreciated.
- * 2012-09-18   v0.2.4   No valid source check.
- * 2012-09-17   v0.2.3   `path.sep` fallback for Node.js <= 0.7.9.
- * 2012-09-17   v0.2.2   Single file copy support. Test refactoring.
- * 2012-09-07   v0.2.0   Refactored from grunt-contrib into individual repo.
+ * 2018-04-06   v1.0.0   forked grunt-contrib-copy [object Object] Create move task
 
 ---
 
-Task submitted by [Chris Talkington](http://christalkington.com/)
+Task submitted by [Sergei Dorogin](http://about.dorogin.com)
 
-*This file was generated on Thu Apr 07 2016 15:11:09.*
+*This file was generated on Fri Apr 06 2018 21:44:29.*
